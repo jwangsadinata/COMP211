@@ -1,0 +1,107 @@
+
+
+int partition (int[] A, int lower, int upper)
+//@requires 0 <= lower && lower < upper && upper <= \length(A);
+//@ensures lower <= \result && \result < upper;
+//@ensures ge_seg(A[\result], A, lower, \result);
+//@ensures le_seg(A[\result], A, \result, upper);
+{
+	int left = lower + 1;
+	int right = upper;
+
+	while (left < right)
+	//@loop_invariant lower <= left && left <= right && right <= upper;
+	//@loop_invariant ge_seg(A[lower], A, lower+1, left);
+	//@loop_invariant le_seg(A[lower], A, right, upper);
+	{
+		int pivot = A[lower];
+		if (pivot >= A[left]) { left++; }
+		else 
+		{
+			//@assert pivot < A[left];
+			swap(A, left, right - 1);
+			right--;
+		}	
+	}
+	// Now we swap to put everything into two partitions.
+	swap(A, lower, left - 1);
+	return left - 1;
+}
+
+// Recursion -> Recursive functions
+// Quicksort use itself as a new function.
+
+void quicksort(int[] A, int lower, int upper)
+//@requires 0 <= lower && lower <= upper && upper <= /length(A);
+//@ensures is_sorted(A, lower, upper);
+{
+	if (upper - lower <= 1) {}
+
+	else{
+		int pivot_spot = ... roll dice ...
+		swap(A,pivot_spot,lower);
+
+		int new_pivot = partition(A, lower, upper);
+		//@assert ge_seg(A[new_pivot], A, lower, new_pivot);
+		//@assert le_seg(A[new_pivot], A, new_pivot, upper);
+
+		quicksort(A,lower,new_pivot);
+		//@assert is_sorted(A,lower, new_pivot);
+
+		quicksort(A,new_pivot+1,upper);
+		//@assert is_sorted(A,new_pivot + 1, upper);
+
+	}
+
+}
+
+
+
+/* Proving loop_invariant
+
+LI: lower < left <= right <= upper
+
+Two cases
+pivot >= A[lower + 1, left)
+pivot < A[right, upper)
+
+To prove this, we need to do it for two cases
+Case 1:
+
+pivot >= A[left]
+Then,
+left' = left + 1
+right' = right
+
+lower < left
+but left < left + 1 so lower < left + 1
+
+then right < upper -> since right is unchanged
+
+left' < right' --> left + 1 < right --> but by the loop test we know left < right, so left + 1 <= right by the loop test.
+
+Testing for pivot:
+right remain unchanged
+
+To prove left
+pivot >= A[lower + 1, left + 1) is equivalent to pivot >= A[lower + 1, left] union with A[left]
+however, A[lower + 1, left] is true by the loop invariant -> ge_seg
+and by the if test -> pivot >= A[left]. Therefore it is true.
+
+
+Case 2:
+Try to prove by yourself.
+
+
+Trying to prove array accesses are in bounds
+ -> A[left] ->
+ -> A[lower] ->
+ -> A[right - 1] -> are in bounds.
+
+
+
+
+
+
+
+

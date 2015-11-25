@@ -1,0 +1,41 @@
+//Client -> forget everything we have done before
+
+#use <conio>
+
+//Compute the size of the stack
+int stack_size_client(stack S)
+// not allowed to use S->top ....
+// almost right, but deletes stack
+// we should keep stack
+{
+	int size = 0;
+	while(! stack_empty(S)) {
+//		push(S, pop(S));
+		size++;
+	}
+	return size;
+}
+// This is a good client code -> use only the interface. but we end up destroying the S.
+
+//goal: convert S to an stack_to_array
+// where top of stack is at the left
+// delete the elements from the stack as we go
+string[] stack_to_array(stack S)
+//@ensures stack_empty(S);
+{
+	int size = stack_size(S);
+	string[] result = alloc_array(string, size);
+
+	for (int i = 0; i < size; i = i + 1)
+		{
+			result[i] = pop(S);
+		}
+}
+
+
+
+//We can put stack_size in the interface -> or we can put it in the Client.
+// When 
+
+
+// data structure in client -> work once and can use it for all the possible implementation

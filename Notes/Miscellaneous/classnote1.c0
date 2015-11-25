@@ -1,0 +1,41 @@
+/* notice that we have tried to write the following loops in this form
+-> //start i at something
+-> stop when something holds of i
+-> change i
+*/
+
+//goal is to make a copy of A
+//where the length is length of A
+
+int[] copy (int[] A, int length) {
+	int[] new = alloc_array(int, length);
+	for (int i = 0; i < length; i++) {
+		new[i] = A[i];
+	}
+	return new;
+}
+
+// in-place (constant extra memory)
+//given an array A, with length elements, we want to flip the order of the elements
+void reverse (int[] A, int length) {
+	int temporary;
+	for (int i = 0; i < length/2 ; i++) { /* notice that this doesn't go up all the way through the array*/
+		temporary = A[i];
+		A[i] = A[length - i - 1];
+		A[length - i - 1] = temporary;
+	}
+}
+
+void test_reverse() {
+	int[] my_array = alloc_array(int, 3);
+	my_array[0] = 1;
+	my_array[1] = 2;
+	my_array[2] = 3;
+
+	reverse(my_array,3);
+
+	//check that
+	assert(my_array[0] == 3);
+	assert(my_array[1] == 2);
+	assert(my_array[2] == 1);
+}

@@ -1,0 +1,23 @@
+#use <string>
+
+void test_queue() {
+
+  queue Q = queue_new();
+
+  assert (queue_empty(Q));
+
+  enq(Q,"who");
+
+  assert (! queue_empty(Q));
+
+  enq(Q,"nose");
+
+  assert (! queue_empty(Q));
+
+  string s1 = deq(Q);
+  assert (string_equal(s1,"who"));
+
+  string s2 = deq(Q);
+  assert (string_equal(s2,"nose"));
+
+}

@@ -1,0 +1,88 @@
+/* 
+ * Stacks
+ * 
+ * Principles of Imperative Computation */
+
+/*** Interface ***/
+
+// typedef _______ stack;
+typedef struct stack_header * stack;
+
+bool stack_empty(stack S);      /* O(1) */
+
+stack stack_new()               /* O(1) */
+/*@ensures stack_empty(\result);@*/;
+
+void push(stack S, elem x)     /* O(1) */
+/*@ensures !stack_empty(S);@*/;
+
+elem pop(stack S)              /* O(1) */
+/*@requires !stack_empty(S); @*/ ;
+
+int stack_length(stack S)               /* O(1) */
+/*@requires !stack_empty(S); @*/ ;
+
+/*** Implementation ***/
+
+struct stack_header {
+	list top;
+};
+
+bool is_stack(struct stack_header * S)
+{
+	return (S != NULL);
+}
+
+bool stack_empty(stack S)
+//@requires is_stack(S);
+{
+	return (S->top == NULL);
+}
+
+stack stack_new()
+//@ensures is_stack(\result);
+//@ensures stack_empty(\result);
+{
+	stack S = alloc(struct stack_header);
+	S->top = NULL;
+	return S;
+}
+
+void push(stack S, elem x)
+//@requires is_stack(S);
+//@ensures is_stack(S);
+{
+	list l = alloc(struct list_node);
+	l->data = x;
+	l->next = S->top;
+	S->top = l;
+}
+
+elem pop(stack S)
+//@requires is_stack(S);
+//@ensures is_stack(S);
+{
+	elem x = S->top->data;
+	S->top = S->top->next;
+	return x;
+}
+
+int stack_length(stack S)
+//@requires is_stack(S);
+{
+	int count = 0;
+	for (list cur = S->top; cur != NULL; cur = cur->next) {
+		count++;
+	}
+	return count;
+}
+
+/*
+	S->top = alloc(struct list_node);
+	S->top->next = S->top;
+	S->top->data = x;
+
+	elem x = S->data[S->top];
+	S->top--;
+	return x;
+*/

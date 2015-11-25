@@ -1,0 +1,162 @@
+/*
+ * Gap Buffers
+ * 
+ * A gap buffer data structure is represented by an array of chars
+ * stored along with its size (limit) and two integers representing
+ * the beginning (inclusive, gap start) and end (exclusive, gap end)
+ * of the gap.
+ * 
+ * */
+
+#use <string>
+
+typedef struct gapbuf_header* gapbuf;
+typedef gapbuf elem; // The data in linked lists will be gap buffers
+
+/*** Interface ***/
+
+struct gapbuf_header {
+  int limit;     /* limit > 0                      */
+  char[] buffer; /* \length(buffer) == limit       */
+  int gap_start; /* 0 <= gap_start                 */
+  int gap_end;   /* gap_start  <= gap_end <= limit */
+};
+
+bool is_gapbuf(struct gapbuf_header* G)
+{
+  //@assert G->limit == \length(G->buffer);
+  return (G->limit > 0 &&                                /* Non-NULL, strictly (+) limit        */
+          G->gap_start >= 0 &&                           /* checking whether gap_start is valid */
+          G->gap_start <= G->gap_end &&                  /* checking whether gap_end is valid   */
+          G->gap_end <= G->limit);                       /* checking whether gap_end is valid   */
+}
+
+bool gapbuf_empty(gapbuf G)     /* Returns true if the buffer is empty */
+//@requires is_gapbuf(G);
+//@ensures is_gapbuf(G);
+{
+  return (G->gap_start == 0 && G->gap_end == G->limit);
+}    
+
+bool gapbuf_full(gapbuf G)      /* Returns true if the buffer is full  */
+//@requires is_gapbuf(G);
+//@ensures is_gapbuf(G);
+{
+  return (G->gap_start == G->gap_end);
+}
+
+//think about this
+bool gapbuf_at_left(gapbuf G)   /* Returns true if the gap is at the   */
+                                /*   left end of the buffer            */
+//@requires is_gapbuf(G);
+//@ensures is_gapbuf(G);
+{
+  return (G->gap_start == 0);
+}
+
+bool gapbuf_at_right(gapbuf G)  /* Returns true if the gap is at the   */
+                                /*   right end of the buffer           */
+//@requires is_gapbuf(G);
+//@ensures is_gapbuf(G);
+{
+  return (G->gap_end == G->limit);
+}
+
+gapbuf gapbuf_new(int limit)    /* Create a new gapbuf of size limit  */
+//@ensures is_gapbuf(\result);
+//@ensures gapbuf_empty(\result);
+{
+  struct gapbuf_header * G = alloc(struct gapbuf_header);
+  G->limit = limit;
+  G->buffer = alloc_array(char, limit);
+  G->gap_start = 0;
+  G->gap_end = limit;
+
+  return G;
+}
+
+void gapbuf_forward(gapbuf G)   /* Move the gap forward, to the right */
+//@requires is_gapbuf(G);
+//@requires (! gapbuf_at_right(G));
+//@ensures is_gapbuf(G);
+{
+  G->buffer[G->gap_start] = G->buffer[G->gap_end];
+  G->gap_start = G->gap_start + 1;
+  G->gap_end = G->gap_end + 1;
+}
+
+void gapbuf_backward(gapbuf G)  /* Move the gap backward, to the left */
+//@requires is_gapbuf(G);
+//@requires (! gapbuf_at_left(G));
+//@ensures is_gapbuf(G);
+{
+  G->gap_start = G->gap_start - 1;
+  G->gap_end = G->gap_end - 1;
+  G->buffer[G->gap_end] = G->buffer[G->gap_start];
+}
+
+void gapbuf_insert(gapbuf G, char c)  /* Insert the char c before the gap    */
+//@requires is_gapbuf(G);
+//@requires (! gapbuf_full(G));
+//@ensures is_gapbuf(G);
+//add more contracts
+{
+  G->buffer[G->gap_start] = c;
+  G->gap_start = G->gap_start + 1;
+}
+
+void gapbuf_delete(gapbuf G)          /* Delete the character before the gap */
+//@requires is_gapbuf(G);
+//@requires (! gapbuf_empty(G));
+//@requires (! gapbuf_at_left(G));
+//@ensures is_gapbuf(G);
+{
+  G->gap_start = G->gap_start - 1;
+}
+
+/*** Implementation ***/
+
+void test_gapbuf() {
+
+  gapbuf G = alloc(struct gapbuf_header);
+  G->limit = 10;
+  G->buffer = alloc_array(char, 10);
+  G->gap_start = 0;
+  G->gap_end = 10;
+
+  assert (is_gapbuf(G));
+
+  G->gap_start = -1;
+  
+  assert (! is_gapbuf(G));
+
+  G->gap_start = 0;
+  G->gap_end = 11;
+
+  assert (! is_gapbuf(G));
+
+  G->gap_start = 3;
+  G->gap_end = 2;
+
+  assert (! is_gapbuf(G));
+
+  G->gap_start = 3;
+  G->gap_end = 3;
+
+  assert (is_gapbuf(G));
+
+  G->limit = 10;
+  G->buffer = alloc_array(char, 1);
+  G->gap_start = 0;
+  G->gap_end = 10;
+
+  assert (is_gapbuf(G));      // If this line is run without contract, then this will be correct.
+
+  G->limit = 1;
+  G->buffer = alloc_array(char, 1);
+  G->gap_start = 1;
+  G->gap_end = 1;
+
+  assert (is_gapbuf(G));
+
+}

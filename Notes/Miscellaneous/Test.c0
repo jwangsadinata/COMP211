@@ -1,0 +1,4 @@
+char a(string x) {
+	int i = string_length(x) - 2;
+	return string_charat(x, i);
+}

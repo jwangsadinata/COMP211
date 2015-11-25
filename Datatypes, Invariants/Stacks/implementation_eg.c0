@@ -1,0 +1,119 @@
+//Implementation Code
+typedef   struct stack_header *    stack;
+bool stack_empty(stack S);     /* 0(1) */
+stack stack_new();             /* 0(1) */
+/*@ensures stack_empty(\result); @*/
+void push(stack S, string e);  /* 0(1) */
+/*@requires !stack_full(S); @*/
+string pop(stack S)            /* 0(1) */
+  /*@requires !stack_empty(S);@*/;   //contracts are cumulative if it is put in the interface 
+ 
+// client stops reading here
+
+// ---------------------------------------------
+
+/* Implementation of stacks */
+
+//Top is bigger or equal to -1; -> show it explicitly later
+struct stack_header {
+   string[] data;
+   int top;    //must be consistent with top
+};
+
+// This is our Data structure invariant!!
+// is_stack returns true if S is a good stack
+// it either fails a contract (signals a contract violation) or return false if it is bad.
+
+bool is_stack(struct stack_header * S)
+{
+	//@assert \length(S->data) == 1000;
+	//this is the best we can do, because \length does not work in function.
+	if (S->top < -1) { return false; }
+	else if (S->top > 1000) { return false; }
+	else { return true; }
+
+
+}
+
+
+void push(stack S, string e)
+//@requires is_stack(S);
+//@ensures is_stack(S);
+{
+	if (S->top + 1 != 1000) {
+		S->data[S->top+1] = e;
+		S->top = S->top + 1;
+	}	
+
+	// what we can do here, is to signal that the stack is full! -> two ways: error() or return a string/bool (true = success, false = ran out of space)
+	// Another way is to change the stack so there is space. (modify the data structure so that it does not run out of space)
+	// Delete the bottom of the stack (cache)
+	// or Do nothing! (put nothing in the else)
+	// or prevent the situation from happening entirely -> modify the contract from push earlier.
+	else {
+		// capacity?? what is the stack is full?
+		// ???????
+		error("Stack is full");    // Program stops running, with a message -> the program is full. No way to recover from an error in c0.
+		// unrecoverable error. We can make a recoverable program with bool function.
+	}
+}
+
+string pop(stack S) 
+//@requires is_stack(S);
+//@ensures is_stack(S);
+{
+	string x = S->data[S->top];
+	//String gets garbage collected, the next line is optional
+	S->data[S->top] == "";  //again, optional  
+	S->top = S->top-1;
+	return x;
+}
+
+bool stack_empty(stack S) 
+//@requires is_stack(S);
+//@ensures is_stack(S);
+//does not change S at all
+{
+	return (S->top == -1);
+}
+
+stack stack_new()
+//@ensures is_stack(\result);
+//@ensures stack_empty(\result);
+{
+	// Very similar to make a new array
+	//struct stack_header * S = alloc(struct stack_header);
+	//emphasize the use of pointer
+	//but we can also write
+	struct stack_header * S = alloc(struct stack_header);
+	S->data = alloc_array(string, 1000);
+	S->top = -1;     //because we want to follow the definition when the stack is empty.
+
+	return S;
+}
+
+int stack_size(stack S)
+{
+	int size = S->top+1;
+}
+
+
+// Want to use struct stack_header * S -> indicate that something is not yet a good stack. Not yet 
+
+//
+
+
+
+/*
+Stack is: an array, with a number assigned to the top of the stack
+fixed capacity stack
+array on the memory, separate the stack
+
+keep track of the top of the stack is
+
+stack => data   the array (its actually arrow on top and line below)
+stack -> top    the position of the top
+
+What is important is, stack has two information -> an array and a position of the top.
+
+*/

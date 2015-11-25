@@ -1,0 +1,140 @@
+struct list_node {
+	int data;      // number 
+	struct list_node * next;     // a pointer that addresses a list_node -> continue again
+};
+
+special pointer: NULL
+which does not point anywhere.
+
+NULL just says, there is no pointer here.
+
+is pointer going to the list_node or pointer is not going anywhere at all?
+
+nice part about it, we can use NULL to represent the empty list
+
+in c0, we use NULL to give alternatives as to where the pointer is going/not going anywhere.
+
+when you create a struct, you will have
+int[] data = empty array
+int front = 0
+struct (inside a struct) = NULL
+
+
+
+struct list_node * L = alloc(struct list_node);
+	L->data = 12;
+	L->next = alloc(struct list_node);
+	L->next->data = 13;
+	L->next->next = alloc(struct list_node);
+	L->next->next->data = 14;
+//	L->next->next->next = NULL
+
+
+There is no limit on how much pointers you can have, it is limited to how much RAM you have.
+
+Writing some code
+
+#use <util>
+#use <conio>
+
+typedef struct list_node * list;
+
+struct list_node {
+	int data;
+	struct list_node * next;
+};
+
+// counts how many nodes there are before NULL
+int length(struct list_node * L)
+{
+	int count = 0;
+	while(L != NULL)
+	{
+		count = count + 1;
+		L = L->next;
+	}
+	return count;
+}
+
+or we can write it as
+
+for (struct list_node * cur = L; cur != NULL; cur = cur->next) {
+	count = count + 1;
+}
+
+This is similar to our way of writing for loops in incrementing values for integers.
+
+int add(struct list_node * L)
+{
+	int sum = 0;
+
+	for (struct list_node * cur = L;
+		 cur != NULL;
+		 cur = cur->next)
+	{
+		sum = sum + cur->data;
+	}
+	return sum
+}
+
+
+list get_node(list L, int k)
+//@requires 0 <= k && k < length(L);
+{
+	for (int i = 0; i < k; i++)
+	//@ loop_invariant 0 <= i && i <= k;
+	{
+		L = L->next;
+	}
+	return L;
+
+// return the k^th number in L
+// the first box has the 0th number
+int get_number(list L, int k)
+//@requires 0 <= k && k < length(L);
+{
+	list kth_node = get_node(L,k);
+	return kth_node->data;
+}
+
+/*
+k = 0  L -> data
+k = 1  L -> next -> data
+k = 2  L -> next -> next -> data
+
+NULL pointer dereference -> error you get when L-> NULL.
+*/
+
+// puts x at position k
+void set_number (list L, int k, int x)
+//@requires 0 <= k && k < length(L);
+{
+	list kth_node = get_node(L,k);
+	kth_node->data = x;
+}
+
+// sneak somebody in after an existing node
+// 	-> this function, insert a new element after the kth node.
+int insert_after(list L, int k, int x)
+//@requires 0 <= k && k < length(L);
+{
+	list kth_node = get_node(L,k);
+	struct list_node * new = alloc(struct list_node);
+	new->data = x;
+	new->next = kth_node->next;
+	kth_node->next = new;
+}
+
+
+Let's think about how long does this things take?
+
+					arrays			lists
+-> get element k     O(1)            O(k) = O(length)
+-> set element k     O(1)            O(k) = O(length)
+-> insert after k   no operation     O(k) = O(length)
+
+
+O(1) -> constant time.
+O(k) -> linear time
+
+When we are looking of data structures -> we usually have trade offs like this. We can do it fast but it might come at a cost that we are unable to do some operations.

@@ -1,0 +1,146 @@
+//typedef ______________ pq
+
+bool pq_empty;
+bool pq_full;
+pq pq_new
+
+void pq_insert(pq P, pq_elem e)
+
+pq_elem pq_min(pq P)
+
+pq_elem pq_delmin(pq P)
+
+int pq_size(pq P)
+
+
+
+//Helper
+
+int parent(int i)
+//@requires i >= 1;
+{
+	return 2*i;
+}
+
+int left(int i){}
+
+int right
+
+int priority(heap H, int i)
+//@requires is_safe_heap(H);
+//@requires 1 <= i && i < H->next;
+{
+	return pq_elem_priority(H->data[i]);
+}
+
+//Today, we just want to think how we make them
+// In the homework, we just have to think 
+// We are going to be implementing it today
+
+
+struct heap_header {
+	int limit;	(size of the array) /* limit = capacity + 1 */
+	int next; (the next free spot) /* 1 <= next && next <= limit */
+	pq_elem[] data; (use the array to store the actual data) /* \length(data) == limit */
+};
+
+typedef struct heap_header* heap;
+
+
+/* 
+*/
+bool is_safe_heap(struct heap_header * H) { (does the data make sense)
+	if (H == NULL) return false;
+	if (!(1 <= H->next && H->next <= H->limit)) return false;
+	//@assert \length(H->data)
+	return true;
+}
+
+// We also want to make sure that this satisfies both shape and order invariant
+The shape invariant is obeyed by the implicit relation of tree and array.
+
+However, to check that the heap obey the order invariant, we need to check the value
+
+bool is_heap(struct heap_header* H)
+{
+	if (!is_safe_heap(H)) return false;
+
+	for (int i = 2; i < H->next; i++)
+		//@loop_invariant
+		if (! (priority(H, i) <= priority(H, parent[i]))) return false;
+}
+
+
+pq_empty
+	next = 1;
+
+pq_full
+	next = limit
+
+
+
+bool is_heap_except_up(struct heap_header* H)
+// ensures is_heap_except_up(H,1) == is_heap(H)
+{
+	if (!is_safe_heap(H)) return false;
+
+	for (int i = 2; i < H->next; i++) {
+	//@loop_invariant 2 <= i;
+		if (! (priority(H, i) <= priority(H, parent(i)))) 
+		{
+			if (! (i == except)) { return false; } // If it is wrong relative to its parent, than that is okay.
+		}
+		if ((n == left(except) || n == right(except)) &&
+			exists(parent(except), H->next)) {
+			if (!(priority(H, n) >= priority(H,parent(except)))) {return false;}
+		}
+	}
+	return true;	
+}
+
+
+void pq_insert(heap H, pq_elem e)
+//@requires is_heap(H);
+//@ensures is_heap(H);
+{
+	H->data[H->next] = e;
+	int except = H->except;
+	H->next = H->next + 1;
+
+	//@assert is_heap(H); ? (we might have broken the order invariant)
+	// our job is to make these things is to be a heap again.
+	// we need a loop in order to fix the problem, gonna be broken for the whole loop.
+
+	Realize that every node, except the (except), satisfy the order invariant
+	The idea of fixing this invariant is to taking something as a heap, except for position, and keep repeating this until we get to the top, in which we will be okay.
+
+	while ( except > 1 && 
+			priority(H, except) < priority(H,parent(except)))  we stop when except when the priority of except is in the right place
+		//@ loop_invariant is_heap_except_up(H, except); (looking up, we are allowed to be wrong)
+		at the least, we can say that this is how it is not a heap, and help us to fix this.
+	{
+		swap(H->data, except, parent(except));
+		except = parent(except);
+		//We know that except has a parent because it is bigger than 1.
+
+		How do we show that this implies the loop_invariant? Invariant is preserved after a step (show with a tree), then it is true after.
+
+		//@assert is_heap; -> now this will work, we can do this.
+		A very powerful structure, we can manipulate, break our invariant so that we can get a faster implementation.
+		if you are ever breaking the invariant, do not let the client see the broken state. just let the client see that the final still obeys the invariant.
+	}
+
+	LI post-condition analysis
+	True initially -> because except is the position where we put the new things in, so it will be true
+	
+	Check that LI implies post-condition when except = 1
+	True at the end, when except = 1, then it is a heap because it has no parent and since we define is_heap_except_up is looking at the parent.
+
+	What about the LI that implies post-condition of priority(except) < priority(parent)
+	Being a heap in is_heap_except_up -> heap everywhere except at this one spot. But if this one spot is correct, then we have is_heap.
+
+}
+
+Homework problem, just draw a tree.
+
+

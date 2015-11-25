@@ -1,0 +1,81 @@
+int a = 1664525;
+int b = 1013904223; -> generates everything mod 2^32
+
+struct rand* new(int size) {
+	struct rand* R
+}
+
+
+
+
+
+
+	R->seed = 0;
+	R->size = size;
+	return R;
+}
+
+
+int size(struct rand* R) {
+	return R->size;
+}
+
+
+int next(struct rand* R)
+//@ensures 0 <= \result && \result < size(R);
+{
+	int a = 5;
+	int b = 7;
+
+	R->seed = (a * R->seed + b) * R->size;
+	return R->seed;
+}
+
+void test(int size, int runs) {
+	struct rand* R = new_size
+}
+
+
+
+
+
+
+//Hash string no rand
+
+#use <rand>
+#use <string>
+
+int hash_string(string s)
+{
+	rand_t r = init_rand(137)
+	int len = string_length(s);
+	int h = 0;                      // Empty string maps to 0
+	for (int i = 0; i < len; i++)
+		//@loop_invariant 0 <= i;
+		{
+			// We can either do some math to see what works well, or try which one works well? Multiplication works well in this case.
+			h = rand(r)*h + char_ord(string_charat(s,i));  //Add a little bit of randomness on each side
+		}
+	return h;
+}
+
+
+string ----T---- randomness
+           |
+           |
+           |
+          Hash -> evenly distributed.
+
+chain -> one of the linked lists.
+
+
+
+
+
+
+
+
+
+
+
+

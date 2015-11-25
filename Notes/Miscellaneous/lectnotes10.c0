@@ -1,0 +1,114 @@
+// return true if x <= A[lower, upper)
+// x is the content of the array, and not the position
+bool le_seg (int x, int[] A, int lower, int upper)
+//@requires 0 <= lower && lower <= upper && upper <= \length(A);
+{
+	for (int i = lower; i < upper; i = i + 1)
+		//@loop_invariant lower <= i && i <= upper;
+		{
+		if (! (x <= A[i])) {return false;}
+		}
+	return true;
+}
+
+
+// lower is strictly less than upper.
+// two postconditions here.
+// the last postcondition says that A[\result] is less than or equal to everyhting in A[lower, upper)
+int min_index(int[] A, int lower, int upper)
+//@requires 0 <= lower && lower < upper && upper <= \length(A);
+//@ensures lower <= \result && \result < upper;
+//@ensures le_seg(A[\result], A, lower, upper);
+{
+	int index_of_smallest = lower;
+
+//index_of_smallest is strictly less than upper, 
+//since because although i goes up by one, the last time index_of_smallest does not go up.
+	for (int i = lower; i < upper; i = i + 1)
+		//@loop_invariant lower <= i && i <= upper;
+		//@loop_invariant lower <= index_of_smallest && index_of_smallest < upper;
+		//@loop_invariant	le_seg(A[index_of_smallest], A, lower, i);
+		{
+			if (A[i] < A[index_of_smallest]) {
+				index_of_smallest = i;
+			}
+	}
+	return index_of_smallest;
+}
+
+//Preservation
+/*
+Assume that |  | |  | || |  || | | | || | |
+							lower			 i					upper
+
+we know A[index_of_smallest] <= A[lower, i)
+give a generic expression for this.
+
+after a loop, i' = i + 1
+
+what we want to show is that A[index_of_smallest] <= A[lower, i')
+not only just i, but also i + 1.
+
+we have two cases, depending on whether the case is true or false.
+
+if true
+A[i] < A[index_of_smallest] <= A[lower, i) by LI.
+then it is also obvious that A[i] <= A[i]; (because they are equal)
+
+if false, !(A[i] < A[index_of_smallest])
+no change -> still true for A[index_of_smallest] <= A[lower, i')
+
+at the end of the loop, i = upper.
+Hence, loop_invariant is proved and also proves the postcondition.
+*/
+
+//stuff we have is sorted AND ALSO IT IS ON THE CORRECT PLACE
+// not only just sorted,  but everything in the correctly sorted and less than
+// or equal to everything we have to the stuff we have not sort yet.
+bool le_segs(int[] A, int lower1, int upper1, int lower2, int upper2)
+//@requires 0 <= lower1 && lower1 <= upper1 && upper1 <= \length(A);
+//@requires 0 <= lower2 && lower2 <= upper2 && upper2 <= \length(A);
+{
+	for (int i = lower1; i < upper1; i = i + 1)
+		//@loop_invariant
+		{
+			//call le_seg -> similar idea.
+		}
+	return ?;
+}
+
+
+void swap (int[] A, int i, int j) {
+	//normal swap that we do.
+}
+
+void sort (int[]A, int lower, int upper)
+//@requires 0 <= lower && lower <= upper && upper <= \length(A);
+//@ensures is_sorted(A, lower, upper);
+{
+	for (int i = lower; i < upper; i++) 
+		//@loop_invariant is_sorted(A, lower, i);
+		//@loop_invariant lower <= i;
+		//@loop_invariant le_segs(A,lower,i,i,upper);
+		{
+			int next_smallest_index = min_index(A,i,upper);
+			swap(A,next_smallest_index,i);
+		}
+}
+
+/* Why it works
+We know LI,
+A[lower, i) is sorted
+A[lower, i) < A[i, upper)
+
+then we want to show LI' 
+A[lower, i + 1) is sorted
+A[lower, i + 1) < A[i + 1, upper)
+
+but we can think about the function swap. if it is bigger it moves from one interval to the other, so the condition still holds.
+What we need to know is just whether
+A[i] <= A[i + 1, upper)
+but it is true because it is written by the ensures of get_min.
+
+Awesome man.
+

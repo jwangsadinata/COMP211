@@ -1,0 +1,68 @@
+// ----------------------------------------------------------------------
+// QUEUE INTERFACE. DO NOT CHANGE
+
+typedef struct queue_header* queue;
+bool queue_empty(queue Q);      /* O(1) */
+queue queue_new()               /* O(1) */
+/*@ensures queue_empty(\result); @*/;              
+void enq(queue Q, string s)     /* O(1) */
+/*@ensures !queue_empty(Q);@*/;
+string deq(queue Q)               /* O(1) */
+/*@requires !queue_empty(Q);@*/;
+// ----------------------------------------------------------------------
+
+/* Implementation of queues goes here */
+
+struct queue_header {
+	string[] data;
+	int front;
+	int back;
+};
+
+bool is_queue(queue Q) {
+	//@assert \length(Q->data) == 1000;
+	return (!(Q->front < 0 && Q->back > 1000));
+}
+
+bool queue_empty(queue Q)
+//@requires is_queue(Q);
+//@ensures is_queue(Q);
+{
+	return (Q->front == Q->back);
+}
+
+
+queue queue_new()
+//@ensures queue_empty(\result);
+{
+	queue Q = alloc(struct queue_header);
+	Q->data = alloc_array(string, 1000);
+  	Q->front = 0;
+  	Q->back = 0;
+  	return Q;
+}
+
+//modify the data structure.
+// Never run of space -> create a new array everytime it runs out
+void enq(queue Q, string s)
+//@requires is_queue(Q);
+//@ensures is_queue(Q);
+{
+	if (Q->(back % 1000) != 1000) {
+		Q->data[Q->(back % 1000)] = s;
+		Q->(back % 1000) = Q->((back + 1) % 1000) ;
+	}
+	else {
+		error("out of space in the queue");
+	}
+}
+
+string deq(queue Q)
+//@requires is_queue(Q);
+//@requires !queue_empty(Q);
+//@ensures is_queue(Q);
+{
+	string s = Q->data[Q->front];
+	Q->front = Q->front + 1;
+	return s;
+}

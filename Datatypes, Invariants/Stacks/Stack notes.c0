@@ -1,0 +1,14 @@
+void push(struck stack_header * S, string e)
+{
+	S->data[S->top+1] = e;
+	S->top = S->top + 1;
+}
+
+string pop(struck stack_header * S) 
+{	
+	string x = S->data[S->top];
+	//String gets garbage collected, the next line is optional
+	S->data[S->top] == "";  //again, optional  
+	S->top = S->top-1;
+	return x
+}

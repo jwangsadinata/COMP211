@@ -1,0 +1,129 @@
+
+// -----------------------------------------------------
+// in the client
+typedef _______ elem;   //typedef string elem;
+
+
+/*** Interface ***/
+
+// typedef _______ queue;
+typedef struct queue_header * queue;
+
+bool queue_empty(queue Q);      /* O(1) */
+
+queue queue_new()               /* O(1) */
+/*@ensures queue_empty(\result); @*/ ;
+
+void enq(queue Q, string e)     /* O(1) */
+/*@ensures !queue_empty(Q); @*/ ;
+
+int deq(queue Q)             /* O(1) */
+/*@requires !queue_empty(Q); @*/ ;
+
+// --------------------
+// Linked Lists
+
+struct list_node {
+	int data;
+	struct list_node * next;
+}
+
+// == for lists is pointer equality
+bool is_segment(list L1, list L2) 
+{
+	for (list cur = L1; cur != NULL; cur = cur->next)
+		{
+			if (cur == L2) { return true; }
+		}
+	return false;
+}
+
+// ------------------------------------------------------
+// QUEUE IMPLEMENTATION
+
+struct queue_header {
+	list front;
+	list back;
+};
+
+bool is_queue(struct queue_header * Q)
+{
+	return (Q != NULL && 
+			Q->front != NULL && 
+			Q->back != NULL && 
+			Q->back->next == NULL &&
+			is_segment(Q->front, Q->back));
+}
+
+int deq(queue Q)
+//@requires is_queue(Q);
+//@ensures is_queue(Q);
+{
+	int to_return = Q->front->data;   // use data structure invariant 
+	Q->front = Q->front->next;
+	return to_return;
+}
+
+void enq(queue Q, int x)
+//@requires is_queue(Q);
+//@ensures is_queue(Q);
+{
+	Q->back->data = x;
+	Q->back->next = alloc(struct list_node);
+	Q->back = Q->back->next;
+}
+
+bool queue_empty(queue Q)
+//@requires is_queue(Q);
+{
+	return (Q->back == Q->front);
+}
+
+queue queue_new()
+//@ensures is_queue(\result);
+//@ensures queue_empty(\result);
+{
+	queue Q = alloc(struct queue_header);
+	Q->back = alloc(struct list_node);
+	Q->front = Q->back;
+	return Q;
+}
+
+/* Constant time enqueue and dequeue.
+
+Few points -> issues in cycles
+What if the linked lists is cyclic -> the next point back to the original
+This will make the loop does not stop
+
+We want to rule out cycle -> cycle detection
+
+The tortoise and the hare -> tomorrow at lab.
+What we should do is to have is_segment go through a cycle detection check.
+
+
+Another point
+
+How do we change the code to work on another type?
+say -> we want to have a queue of string instead of queue of integers.
+
+we can just change all the int type into string and that will do the job.
+
+But this is inefficient
+
+We want to prevent copying / minimize
+
+We can do this by using the abstraction of element
+-> typedef _________ elem
+where elem can take different type of int, char and string
+
+
+We can put this in our interface -> and the idea is that CLIENT, should feed the elem that work for a particular program
+the IMPLEMENTATION will make a program that works for any elem.
+
+Interface want to be polymorphic -> it can work the same no matter what elem it is.
+
+polymorphism or parametrize interface -> saves you from writing the same code as time goes.
+
+
+
+
