@@ -1,5 +1,5 @@
 # COMP211
-(Since some of my code for this class can be used as a solution to future classes, I removed my code for class assignments from this repository. For code samples, please contact me through email at jason.christian19@gmail.com)
+(Update: I removed my code for the class assignments from this repository since some of my code for this class can be used as a solution to future classes on the same subject, and hence might be subjected to the Honor Code. For code samples, please contact me through email at jason.christian19@gmail.com)
 
 Coursework for Intro to Computer Science (Principles of Imperative Computation), written in c0.
 
